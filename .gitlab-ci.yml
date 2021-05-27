@@ -1,5 +1,6 @@
 stages:
   - "Deploy"
+  - "Kiali"
 
 variables:
   DOCKER_ARTIFACTORY_REPO: 172.16.24.68:8082
@@ -8,8 +9,21 @@ Deploy:
   image:  varunshkumar/dind-k8s:v2
   stage: "Deploy"
   script:
-    - export KUBECONFIG=kubeconfig.yaml
+    - export KUBECONFIG=kubeconfig.yml
     - kubectl cluster-info
     - kubectl get nodes
     - kubectl get services
     - kubectl get deployment data-access-service --template={{.status.readyReplicas}} -n eaportal-service
+
+    # Deploy Kiali
+    #- kubectl apply -f ${ISTIO_HOME}/samples/addons/kiali.yaml
+    #- helm install --namespace istio-system --set auth.strategy="anonymous" --repo https://kiali.org/helm-charts kiali-server kiali-server
+
+    # Set Kiali as NodePort
+    - kubectl patch svc kiali -n istio-system -p '{"spec":{"type":"NodePort"}}'
+
+    # Set Prometheus as NodePort
+    - kubectl patch svc prometheus -n istio-system -p '{"spec":{"type":"NodePort"}}'
+
+    # Get all services
+    - kubectl get services
