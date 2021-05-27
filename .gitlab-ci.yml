@@ -8,7 +8,7 @@ Deploy:
   image:  varunshkumar/dind-k8s:v2
   stage: "Deploy"
   script:
-    - export KUBECONFIG=Kubeconfig.yaml
+    - export KUBECONFIG=kubeconfig.yaml
     - kubectl cluster-info
     - kubectl get nodes
     - kubectl get services
