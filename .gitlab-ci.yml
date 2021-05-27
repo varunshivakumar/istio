@@ -1,0 +1,15 @@
+stages:
+  - "Deploy"
+
+variables:
+  DOCKER_ARTIFACTORY_REPO: 172.16.24.68:8082
+
+Deploy:
+  image:  varunshkumar/dind-k8s:v2
+  stage: "Deploy"
+  script:
+    - export KUBECONFIG=Kubeconfig.yaml
+    - kubectl cluster-info
+    - kubectl get nodes
+    - kubectl get services
+    - kubectl get deployment data-access-service --template={{.status.readyReplicas}} -n eaportal-service
