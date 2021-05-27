@@ -1,0 +1,68 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: eaportal-service-gateway
+  namespace: eaportal-service
+spec:
+  selector:
+    istio: ingressgateway 
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: eaportal-service
+  namespace: eaportal-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - eaportal-service-gateway
+  http:
+  - match:
+    - uri:
+        exact: /update-report
+    - uri:
+        exact: /update-inventory      
+    route:
+    - destination:
+        host: inventory-update-service
+        port:
+          number: 8585
+  - match:    
+    - uri:
+        exact: /report-service        
+    route:
+    - destination:
+        host: report-service
+        port:
+          number: 8383  
+  - match:      
+    - uri:
+        exact: /inventory-service    
+    route:
+    - destination:
+        host: inventory-service
+        port:
+          number: 8484   
+  - match:      
+    - uri:
+        exact: /save/inventory 
+    - uri:
+        exact: /save/report
+    - uri:
+        exact: /data/inventory  
+    - uri:
+        exact: /data/reports 
+    route:
+    - destination:
+        host: data-access-service
+        port:
+          number: 8282        
+            
