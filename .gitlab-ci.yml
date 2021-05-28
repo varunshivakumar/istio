@@ -21,9 +21,12 @@ Deploy:
 
     # Set Kiali as NodePort
     - kubectl patch svc kiali -n istio-system -p '{"spec":{"type":"NodePort"}}'
+    - kubectl describe services kiali -n istio-system
+
 
     # Set Prometheus as NodePort
     - kubectl patch svc prometheus -n istio-system -p '{"spec":{"type":"NodePort"}}'
+    - kubectl describe services prometheus -n istio-system
 
     # Get all services
     - kubectl get services
