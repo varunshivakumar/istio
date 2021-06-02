@@ -48,7 +48,7 @@ Deploy:
 
     # Create a certificate and a private key for data-access-service.eaportal-service.svc.cluster.local:
     - openssl req -out $EAPORTAL_SERVICE_NAME.csr -newkey rsa:2048 -nodes -keyout $EAPORTAL_SERVICE_NAME.key -subj "/CN=$DATA_ACCESS_SERVICE_URL/O=$EAPORTAL_SERVICE_NAME"
-    - openssl x509 -req -days 365 -CA example.com.crt -CAkey $EAPORTAL_SERVICE_NAME.key -set_serial 0 -in $EAPORTAL_SERVICE_NAME.csr -out $EAPORTAL_SERVICE_NAME.crt
+    - openssl x509 -req -days 365 -CA $EAPORTAL_SERVICE_NAME.crt -CAkey $EAPORTAL_SERVICE_NAME.key -set_serial 0 -in $EAPORTAL_SERVICE_NAME.csr -out $EAPORTAL_SERVICE_NAME.crt
 
     - kubectl create -n istio-system secret tls $EAPORTAL_SERVICE_NAME-credential --key=$EAPORTAL_SERVICE_NAME.key --cert=$EAPORTAL_SERVICE_NAME.crt
     - kubectl apply -f eaportal-service/gateway.yml
