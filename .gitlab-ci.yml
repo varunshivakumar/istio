@@ -43,11 +43,11 @@ Deploy:
     - export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 
     # Create Create a root certificate and private key to sign the certificates for your services
-    - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $INGRESS_HOST.key -out $INGRESS_HOST.crt -subj '/O=$EAPORTAL_SERVICE_NAME Inc./CN=$DATA_ACCESS_SERVICE_DOMAIN'
+    - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $EAPORTAL_SERVICE_NAME.key -out $EAPORTAL_SERVICE_NAME.crt -subj '/O=$EAPORTAL_SERVICE_NAME Inc./CN=$DATA_ACCESS_SERVICE_DOMAIN'
     - ls $INGRESS_HOST.*
 
     # Create a certificate and a private key for data-access-service.eaportal-service.svc.cluster.local:
-    - openssl req -out $EAPORTAL_SERVICE_NAME.csr -newkey rsa:2048 -nodes -keyout $EAPORTAL_SERVICE_NAME.key -subj "/CN=$DATA_ACCESS_SERVICE_URL/O=$EAPORTAL_SERVICE_NAME"
+    - openssl req -out $EAPORTAL_SERVICE_NAME.csr -newkey rsa:2048 -nodes -keyout $EAPORTAL_SERVICE_NAME.key -subj "/CN=$DATA_ACCESS_SERVICE_DOMAIN/O=$EAPORTAL_SERVICE_NAME"
     - openssl x509 -req -days 365 -CA $EAPORTAL_SERVICE_NAME.crt -CAkey $EAPORTAL_SERVICE_NAME.key -set_serial 0 -in $EAPORTAL_SERVICE_NAME.csr -out $EAPORTAL_SERVICE_NAME.crt
 
     - kubectl create -n istio-system secret tls $EAPORTAL_SERVICE_NAME-credential --key=$EAPORTAL_SERVICE_NAME.key --cert=$EAPORTAL_SERVICE_NAME.crt
