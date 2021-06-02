@@ -42,6 +42,7 @@ Deploy:
     - export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}')
     - export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
     - export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+    - echo $GATEWAY_URL
 
     # Create Create a root certificate and private key to sign the certificates for your services
     - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $EAPORTAL_SERVICE_DOMAIN.key -out $EAPORTAL_SERVICE_DOMAIN.crt -subj '/CN=$EAPORTAL_SERVICE_DOMAIN/O=$EAPORTAL_SERVICE_NAME'
