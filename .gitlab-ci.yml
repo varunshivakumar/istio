@@ -4,6 +4,9 @@ stages:
 
 variables:
   DOCKER_ARTIFACTORY_REPO: 172.16.24.68:8082
+  EAPORTAL_SERVICE_NAME: eaportal-service
+  DATA_ACCESS_SERVICE_NAME: data-access-service
+  DATA_ACCESS_SERVICE_DOMAIN: $DATA_ACCESS_SERVICE_NAME.$EAPORTAL_SERVICE_NAME.svc.cluster.local
 
 Deploy:
   image:  varunshkumar/dind-k8s:v2
@@ -30,3 +33,22 @@ Deploy:
 
     # Get all services
     - kubectl get services
+
+    # Check Ingress Gateway
+    - kubectl get svc istio-ingressgateway -n istio-system
+    - export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+    - export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+    - export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}')
+    - export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+    - export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+
+    # Create Create a root certificate and private key to sign the certificates for your services
+    - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $INGRESS_HOST.key -out $INGRESS_HOST.crt # -subj '/O=example Inc./CN=example.com'
+    - ls $INGRESS_HOST.*
+
+    # Create a certificate and a private key for data-access-service.eaportal-service.svc.cluster.local:
+    - openssl req -out $EAPORTAL_SERVICE_NAME.csr -newkey rsa:2048 -nodes -keyout $EAPORTAL_SERVICE_NAME.key -subj "/CN=$DATA_ACCESS_SERVICE_URL/O=$EAPORTAL_SERVICE_NAME"
+    - openssl x509 -req -days 365 -CA example.com.crt -CAkey $EAPORTAL_SERVICE_NAME.key -set_serial 0 -in $EAPORTAL_SERVICE_NAME.csr -out $EAPORTAL_SERVICE_NAME.crt
+
+    - kubectl create -n istio-system secret tls $EAPORTAL_SERVICE_NAME-credential --key=$EAPORTAL_SERVICE_NAME.key --cert=$EAPORTAL_SERVICE_NAME.crt
+    - kubectl apply -f eaportal-service/gateway.yml
