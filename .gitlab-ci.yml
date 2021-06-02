@@ -5,8 +5,9 @@ stages:
 variables:
   DOCKER_ARTIFACTORY_REPO: 172.16.24.68:8082
   EAPORTAL_SERVICE_NAME: eaportal-service
+  EAPORTAL_SERVICE_DOMAIN: $EAPORTAL_SERVICE_NAME.svc.cluster.local
   DATA_ACCESS_SERVICE_NAME: data-access-service
-  DATA_ACCESS_SERVICE_DOMAIN: $DATA_ACCESS_SERVICE_NAME.$EAPORTAL_SERVICE_NAME.svc.cluster.local
+  DATA_ACCESS_SERVICE_DOMAIN: $DATA_ACCESS_SERVICE_NAME.$EAPORTAL_SERVICE_DOMAIN
 
 Deploy:
   image:  varunshkumar/dind-k8s:v2
@@ -43,11 +44,11 @@ Deploy:
     - export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 
     # Create Create a root certificate and private key to sign the certificates for your services
-    - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $EAPORTAL_SERVICE_NAME.key -out $EAPORTAL_SERVICE_NAME.crt -subj '/CN=$DATA_ACCESS_SERVICE_DOMAIN/O=$EAPORTAL_SERVICE_NAME'
+    - openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout $EAPORTAL_SERVICE_DOMAIN.key -out $EAPORTAL_SERVICE_DOMAIN.crt -subj '/CN=$EAPORTAL_SERVICE_DOMAIN/O=$EAPORTAL_SERVICE_NAME'
 
     # Create a certificate and a private key for data-access-service.eaportal-service.svc.cluster.local:
-    - openssl req -out $EAPORTAL_SERVICE_NAME.csr -newkey rsa:2048 -nodes -keyout $EAPORTAL_SERVICE_NAME.key -subj "/CN=$DATA_ACCESS_SERVICE_DOMAIN/O=$EAPORTAL_SERVICE_NAME"
-    - openssl x509 -req -days 365 -CA $EAPORTAL_SERVICE_NAME.crt -CAkey $EAPORTAL_SERVICE_NAME.key -set_serial 0 -in $EAPORTAL_SERVICE_NAME.csr -out $EAPORTAL_SERVICE_NAME.crt
+    - openssl req -out $DATA_ACCESS_SERVICE_DOMAIN.csr -newkey rsa:2048 -nodes -keyout $DATA_ACCESS_SERVICE_DOMAIN.key -subj "/CN=$DATA_ACCESS_SERVICE_DOMAIN/O=$DATA_ACCESS_SERVICE_NAME"
+    - openssl x509 -req -days 365 -CA $EAPORTAL_SERVICE_DOMAIN.crt -CAkey $EAPORTAL_SERVICE_DOMAIN.key -set_serial 0 -in $DATA_ACCESS_SERVICE_DOMAIN.csr -out $DATA_ACCESS_SERVICE_DOMAIN.crt
 
-    - kubectl create -n istio-system secret tls $EAPORTAL_SERVICE_NAME-credential --key=$EAPORTAL_SERVICE_NAME.key --cert=$EAPORTAL_SERVICE_NAME.crt
+    - kubectl create -n istio-system secret tls $DATA_ACCESS_SERVICE_NAME-credential --key=$DATA_ACCESS_SERVICE_DOMAIN.key --cert=$DATA_ACCESS_SERVICE_DOMAIN.crt
     - kubectl apply -f eaportal-service/gateway.yml
