@@ -7,12 +7,7 @@ spec:
   selector:
     istio: ingressgateway 
   servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-      - "*"
+
   - port:
       number: 443
       name: https
@@ -21,7 +16,7 @@ spec:
       mode: SIMPLE
       credentialName: data-access-service-credential
     hosts:
-    - "*"
+      - "*"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -33,16 +28,7 @@ spec:
   - "*"
   gateways:
   - eaportal-service-gateway
-  tls:
-  - match:
-    - port: 443
-      sniHosts:
-        - "*"
-    route:
-      - destination:
-          host: data-access-service
-          port:
-            number: 8282
+
 
   http:
   - match:
