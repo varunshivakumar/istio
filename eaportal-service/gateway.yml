@@ -29,7 +29,6 @@ spec:
   gateways:
   - eaportal-service-gateway
 
-
   http:
   - match:
     - uri:

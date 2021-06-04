@@ -52,4 +52,5 @@ Deploy:
     - openssl x509 -req -days 365 -CA $EAPORTAL_SERVICE_DOMAIN.crt -CAkey $EAPORTAL_SERVICE_DOMAIN.key -set_serial 0 -in $DATA_ACCESS_SERVICE_DOMAIN.csr -out $DATA_ACCESS_SERVICE_DOMAIN.crt
     - kubectl delete -n eaportal-service secret $DATA_ACCESS_SERVICE_NAME-credential
     - kubectl create -n eaportal-service secret tls $DATA_ACCESS_SERVICE_NAME-credential --key=$DATA_ACCESS_SERVICE_DOMAIN.key --cert=$DATA_ACCESS_SERVICE_DOMAIN.crt || exit 0
+    - kubectl create -n istio-system secret tls $DATA_ACCESS_SERVICE_NAME-credential --key=$DATA_ACCESS_SERVICE_DOMAIN.key --cert=$DATA_ACCESS_SERVICE_DOMAIN.crt || exit 0
     - kubectl apply -f eaportal-service/gateway.yml
