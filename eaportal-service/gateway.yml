@@ -36,13 +36,13 @@ spec:
   tls:
   - match:
     - port: 443
-    - sniHosts:
+      sniHosts:
         - "*"
     route:
       - destination:
-        host: data-access-service
-        port:
-          number: 8282
+          host: data-access-service
+          port:
+            number: 8282
 
   http:
   - match:
