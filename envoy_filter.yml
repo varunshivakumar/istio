@@ -38,7 +38,7 @@ spec:
     - applyTo: CLUSTER
       match:
         cluster:
-          service: ratelimit.default.svc.cluster.local
+          service: ratelimit.istio-system.svc.cluster.local
       patch:
         operation: ADD
         # Adds the rate limit service cluster for rate limit service defined in step 1.
@@ -55,7 +55,7 @@ spec:
               - endpoint:
                   address:
                      socket_address:
-                      address: ratelimit.default.svc.cluster.local
+                      address: ratelimit.istio-system.svc.cluster.local
                       port_value: 8081
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -84,4 +84,4 @@ spec:
             - actions: # any actions in here
               - request_headers:
                   header_name: ":path"
-                  descriptor_key: "PATH"
+                  descriptor_key: "/data/reports"
