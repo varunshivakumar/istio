@@ -85,3 +85,21 @@ spec:
               - request_headers:
                   header_name: ":path"
                   descriptor_key: "PATH"
+    - applyTo: VIRTUAL_HOST
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "*:443"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        # Applies the rate limit rules.
+        value:
+          rate_limits:
+            - actions: # any actions in here
+                - request_headers:
+                    header_name: ":path"
+                    descriptor_key: "PATH"
+
