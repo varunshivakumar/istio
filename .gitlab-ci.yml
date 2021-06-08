@@ -61,6 +61,7 @@ Deploy:
 
     # Create a global rate limit service which implements Envoy’s rate limit service protocol.
     #- kubectl apply -f https://github.com/istio/istio/blob/release-1.10/samples/ratelimit/rate-limit-service.yaml
+    - kubectl delete -f rate-limit-service.yaml
     - kubectl apply -f rate-limit-service.yaml
 
     # Apply an EnvoyFilter to the ingressgateway to enable global rate limiting using Envoy’s global rate limit filter.
@@ -69,6 +70,7 @@ Deploy:
 
     # Apply another EnvoyFilter to the ingressgateway that defines the route configuration on which to rate limit.
     # This adds rate limit actions for any route from a virtual host named *.80.
+    - kubectl delete -f envoy_filter.yml
     - kubectl apply -f envoy_filter.yml
 
     # Deploy gateway and virtual service
