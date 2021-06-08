@@ -26,7 +26,7 @@ spec:
           name: envoy.filters.http.ratelimit
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-            # domain can be anything! Match it to the rate limiter service config
+            # domain can be anything! Match it to the ratelimter service config
             domain: productpage-ratelimit
             failure_mode_deny: true
             rate_limit_service:
@@ -38,7 +38,7 @@ spec:
     - applyTo: CLUSTER
       match:
         cluster:
-          service: ratelimit.istio-system.svc.cluster.local
+          service: ratelimit.default.svc.cluster.local
       patch:
         operation: ADD
         # Adds the rate limit service cluster for rate limit service defined in step 1.
@@ -55,7 +55,7 @@ spec:
               - endpoint:
                   address:
                      socket_address:
-                      address: ratelimit.istio-system.svc.cluster.local
+                      address: ratelimit.default.svc.cluster.local
                       port_value: 8081
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -73,7 +73,7 @@ spec:
         context: GATEWAY
         routeConfiguration:
           vhost:
-            name: "*:31586"
+            name: "*:80"
             route:
               action: ANY
       patch:
@@ -84,4 +84,4 @@ spec:
             - actions: # any actions in here
               - request_headers:
                   header_name: ":path"
-                  descriptor_key: "/data/reports"
+                  descriptor_key: "PATH"
