@@ -73,7 +73,7 @@ spec:
         context: GATEWAY
         routeConfiguration:
           vhost:
-            name: "*"
+            name: "*:80"
             route:
               action: ANY
       patch:
