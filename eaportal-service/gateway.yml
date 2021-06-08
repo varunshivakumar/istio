@@ -69,5 +69,4 @@ spec:
     - destination:
         host: data-access-service
         port:
-          number: 8282        
-            
+          number: 8282
