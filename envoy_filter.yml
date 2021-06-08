@@ -26,7 +26,7 @@ spec:
           name: envoy.filters.http.ratelimit
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-            # domain can be anything! Match it to the ratelimter service config
+            # domain can be anything! Match it to the rate limiter service config
             domain: productpage-ratelimit
             failure_mode_deny: true
             rate_limit_service:
