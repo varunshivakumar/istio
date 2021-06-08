@@ -56,12 +56,10 @@ Deploy:
     - kubectl create -n istio-system secret tls $DATA_ACCESS_SERVICE_NAME-credential --key=$DATA_ACCESS_SERVICE_DOMAIN.key --cert=$DATA_ACCESS_SERVICE_DOMAIN.crt || exit 0
 
     # Use the following configmap to configure the reference implementation to rate limit requests to the path /productpage at 1 req/min and all other requests at 100 req/min.
-    - kubectl delete -f config_map.yml
     - kubectl apply -n istio-system -f config_map.yml
 
     # Create a global rate limit service which implements Envoy’s rate limit service protocol.
     #- kubectl apply -f https://github.com/istio/istio/blob/release-1.10/samples/ratelimit/rate-limit-service.yaml
-    - kubectl delete -f rate-limit-service.yaml
     - kubectl apply -n istio-system -f rate-limit-service.yaml
 
     # Apply an EnvoyFilter to the ingressgateway to enable global rate limiting using Envoy’s global rate limit filter.
@@ -70,7 +68,6 @@ Deploy:
 
     # Apply another EnvoyFilter to the ingressgateway that defines the route configuration on which to rate limit.
     # This adds rate limit actions for any route from a virtual host named *.80.
-    - kubectl delete -f envoy_filter.yml
     - kubectl apply -n istio-system -f envoy_filter.yml
 
     # Deploy gateway and virtual service
